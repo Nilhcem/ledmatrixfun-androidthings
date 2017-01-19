@@ -11,7 +11,7 @@ import java.io.IOException;
 public class TextScroller {
 
     private static final int MATRIX_SIZE = 8;
-    private static final int REFRESH_RATE_MS = 33;
+    private static final int SCROLL_SPEED_MS = 80;
 
     interface OnTextScrollListener {
         Bitmap onStart();
@@ -34,14 +34,16 @@ public class TextScroller {
                 Bitmap fullText = listener.onStart();
 
                 try {
+                    long startTime;
                     Bitmap part = Bitmap.createBitmap(MATRIX_SIZE, MATRIX_SIZE, Bitmap.Config.ARGB_8888);
                     Canvas canvas = new Canvas(part);
 
                     for (int i = 0; i < fullText.getWidth() - MATRIX_SIZE; i++) {
+                        startTime = System.currentTimeMillis();
                         part.eraseColor(Color.TRANSPARENT);
                         canvas.drawBitmap(fullText, new Rect(i, 0, i + MATRIX_SIZE, MATRIX_SIZE), new Rect(0, 0, MATRIX_SIZE, MATRIX_SIZE), null);
                         listener.onDraw(part);
-                        Thread.sleep(REFRESH_RATE_MS);
+                        Thread.sleep(Math.max(0, (SCROLL_SPEED_MS - (System.currentTimeMillis() - startTime))));
                     }
 
                     listener.onStop();
