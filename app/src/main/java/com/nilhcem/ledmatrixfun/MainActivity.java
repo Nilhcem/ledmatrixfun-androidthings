@@ -12,7 +12,7 @@ import com.google.android.things.contrib.driver.sensehat.LedMatrix;
 
 import java.io.IOException;
 
-class MainActivity extends Activity {
+public class MainActivity extends Activity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
