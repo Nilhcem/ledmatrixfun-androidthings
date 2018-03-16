@@ -22,12 +22,12 @@ import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 
 import com.google.android.things.pio.I2cDevice;
-import com.google.android.things.pio.PeripheralManagerService;
+import com.google.android.things.pio.PeripheralManager;
 
 import java.io.IOException;
 
 /**
- *  Driver for the SenseHat LED matrix.
+ * Driver for the SenseHat LED matrix.
  */
 public class LedMatrix implements AutoCloseable {
     public static final int WIDTH = 8;
@@ -39,13 +39,14 @@ public class LedMatrix implements AutoCloseable {
 
     /**
      * Create a new LED matrix driver connected on the given I2C bus.
-     * @param bus I2C bus the sensor is connected to.
+     *
+     * @param bus     I2C bus the sensor is connected to.
      * @param address I2C device slave address
      * @throws IOException
      */
     public LedMatrix(String bus, int address) throws IOException {
-        PeripheralManagerService pioService = new PeripheralManagerService();
-        mDevice = pioService.openI2cDevice(bus, address);
+        PeripheralManager manager = PeripheralManager.getInstance();
+        mDevice = manager.openI2cDevice(bus, address);
     }
 
     /* package */ LedMatrix(I2cDevice device) {
@@ -54,6 +55,7 @@ public class LedMatrix implements AutoCloseable {
 
     /**
      * Close the driver and the underlying device.
+     *
      * @throws IOException
      */
     @Override
@@ -69,20 +71,21 @@ public class LedMatrix implements AutoCloseable {
 
     /**
      * Draw the given color to the LED matrix.
+     *
      * @param color Color to draw
      * @throws IOException
      */
     public void draw(int color) throws IOException {
         mBuffer[0] = 0;
         float a = Color.alpha(color) / 255.f;
-        byte r = (byte)((int)(Color.red(color)*a)>>3);
-        byte g = (byte)((int)(Color.green(color)*a)>>3);
-        byte b = (byte)((int)(Color.blue(color)*a)>>3);
+        byte r = (byte) ((int) (Color.red(color) * a) >> 3);
+        byte g = (byte) ((int) (Color.green(color) * a) >> 3);
+        byte b = (byte) ((int) (Color.blue(color) * a) >> 3);
         for (int y = 0; y < HEIGHT; y++) {
             for (int x = 0; x < WIDTH; x++) {
-                mBuffer[1+x+WIDTH*0+3*WIDTH*y] = r;
-                mBuffer[1+x+WIDTH*1+3*WIDTH*y] = g;
-                mBuffer[1+x+WIDTH*2+3*WIDTH*y] = b;
+                mBuffer[1 + x + WIDTH * 0 + 3 * WIDTH * y] = r;
+                mBuffer[1 + x + WIDTH * 1 + 3 * WIDTH * y] = g;
+                mBuffer[1 + x + WIDTH * 2 + 3 * WIDTH * y] = b;
             }
         }
         mDevice.write(mBuffer, mBuffer.length);
@@ -90,6 +93,7 @@ public class LedMatrix implements AutoCloseable {
 
     /**
      * Draw the given drawable to the LED matrix.
+     *
      * @param drawable Drawable to draw
      * @throws IOException
      */
@@ -104,6 +108,7 @@ public class LedMatrix implements AutoCloseable {
 
     /**
      * Draw the given bitmap to the LED matrix.
+     *
      * @param bitmap Bitmap to draw
      * @throws IOException
      */
@@ -114,9 +119,9 @@ public class LedMatrix implements AutoCloseable {
             for (int x = 0; x < WIDTH; x++) {
                 int p = bitmap.getPixel(x, y);
                 float a = Color.alpha(p) / 255.f;
-                mBuffer[1+x+WIDTH*0+3*WIDTH*y] = (byte)((int)(Color.red(p)*a)>>3);
-                mBuffer[1+x+WIDTH*1+3*WIDTH*y] = (byte)((int)(Color.green(p)*a)>>3);
-                mBuffer[1+x+WIDTH*2+3*WIDTH*y] = (byte)((int)(Color.blue(p)*a)>>3);
+                mBuffer[1 + x + WIDTH * 0 + 3 * WIDTH * y] = (byte) ((int) (Color.red(p) * a) >> 3);
+                mBuffer[1 + x + WIDTH * 1 + 3 * WIDTH * y] = (byte) ((int) (Color.green(p) * a) >> 3);
+                mBuffer[1 + x + WIDTH * 2 + 3 * WIDTH * y] = (byte) ((int) (Color.blue(p) * a) >> 3);
             }
         }
         mDevice.write(mBuffer, mBuffer.length);
