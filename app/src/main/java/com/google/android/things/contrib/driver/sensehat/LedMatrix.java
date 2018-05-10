@@ -45,8 +45,8 @@ public class LedMatrix implements AutoCloseable {
      * @throws IOException
      */
     public LedMatrix(String bus, int address) throws IOException {
-        PeripheralManager manager = PeripheralManager.getInstance();
-        mDevice = manager.openI2cDevice(bus, address);
+        PeripheralManager pioService = PeripheralManager.getInstance();
+        mDevice = pioService.openI2cDevice(bus, address);
     }
 
     /* package */ LedMatrix(I2cDevice device) {
